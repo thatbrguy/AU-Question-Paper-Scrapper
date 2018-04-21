@@ -11,6 +11,7 @@ parser.add_argument("--dept", help="Department", choices=['ece','cse','civil','m
 args = parser.parse_args()
 
 def get_details(sem_choice, dept_choice):
+    
     semesters = {'1': 'I', '2':'II', '3':'III', '4':'IV', '5':'V', '6':'VI', '7':'VII', '8':'VIII'}
     depts = {'civil': 'http://www.tnscholars.com/annaUnivQPUg/UgQuestionPaperSubjectList.php?dep=Civil&dept=BE-CE&year=2013&deptdetail=B.E.%20Civil%20Engineering',
          'cse': 'http://www.tnscholars.com/annaUnivQPUg/UgQuestionPaperSubjectList.php?dep=CSE&dept=BE-CSE&year=2013&deptdetail=B.E.%20Computer%20Science%20and%20Engineering',
@@ -28,6 +29,7 @@ def get_details(sem_choice, dept_choice):
     return sem, home_soup
 
 def get_subjects(sem, home_soup):
+    
     subjects = home_soup.find_all("a", {"href": re.compile('annaUniv')})
     urls = {}
     print('------------------------------------------------------------')
@@ -42,9 +44,11 @@ def get_subjects(sem, home_soup):
             urls[subject_string] = urlsub
             print(subject_string)
     print('------------------------------------------------------------')
+    
     return urls
 
 def get_papers(urls):
+    
     pdfs_subject_dict = {}
     for subject_string, url in zip(urls.keys(), urls.values()):
         page = requests.get(url).text
@@ -55,6 +59,7 @@ def get_papers(urls):
             match = re.search('(?<=\(\')(.*)(?=\'\))', str(pdf_url))
             ID.append(match.group())
         pdfs_subject_dict[subject_string] = ID
+        
     return pdfs_subject_dict
 
 def dump_papers(pdfs_subject_dict, sem=None, dept=None):
@@ -90,18 +95,13 @@ def dump_papers(pdfs_subject_dict, sem=None, dept=None):
                 print(file_name, '(', subject_string, ')', 'Not Available')
 
 if __name__ == "__main__":
-
-    sem_list = args.sem.split(',')
-    dept_list = args.dept.split(',')
-
-    for sem_choice in sem_list:
-        for dept_choice in dept_list:
-            sem, home_page = get_details(sem_choice, dept_choice)
-            print('------------------------------------------------------------')
-            print('Fetching: Dept:', dept_choice.upper(), 'Sem:', sem)
-            urls = get_subjects(sem, home_page)
-            pdfs = get_papers(urls)
-            dump_papers(pdfs, sem, dept_choice)
+    
+    sem, home_page = get_details(args.sem, args.dept)
+    print('------------------------------------------------------------')
+    print('Fetching: Dept:', dept_choice.upper(), 'Sem:', sem)
+    urls = get_subjects(sem, home_page)
+    pdfs = get_papers(urls)
+    dump_papers(pdfs, sem, dept_choice)
 
     print('Done')
     print('------------------------------------------------------------')
