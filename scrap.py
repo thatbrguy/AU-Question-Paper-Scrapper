@@ -98,10 +98,10 @@ if __name__ == "__main__":
     
     sem, home_page = get_details(args.sem, args.dept)
     print('------------------------------------------------------------')
-    print('Fetching: Dept:', dept_choice.upper(), 'Sem:', sem)
+    print('Fetching: Dept:', args.dept.upper(), 'Sem:', sem)
     urls = get_subjects(sem, home_page)
     pdfs = get_papers(urls)
-    dump_papers(pdfs, sem, dept_choice)
+    dump_papers(pdfs, sem, args.dept)
 
     print('Done')
     print('------------------------------------------------------------')
