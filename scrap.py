@@ -52,7 +52,7 @@ def get_papers(urls):
     pdfs_subject_dict = {}
     for subject_string, url in zip(urls.keys(), urls.values()):
         page = requests.get(url).text
-        soup = BeautifulSoup(page, "html5lib")
+        soup = BeautifulSoup(page, "html.parser")
         pdf_urls = soup.find_all("a", {"href": re.compile("javascript")})
         ID = []
         for pdf_url in pdf_urls:
@@ -80,7 +80,7 @@ def dump_papers(pdfs_subject_dict, sem=None, dept=None):
             os.mkdir(child_dir)
         for ID in id_list:
             pdf_url = urllib.request.urlopen('http://www.tnscholars.com/annaUnivQPUg/showPdf.php?recNo=' + str(ID))
-            soup = BeautifulSoup(pdf_url, "html5lib")
+            soup = BeautifulSoup(pdf_url, "html.parser")
             pdf = soup.find_all("iframe")
             pdf_file = 'http://www.tnscholars.com/' + re.search('(?<=src=")(.*)(?=.pdf")', str(pdf)).group() + '.pdf'
             #file_name = os.path.basename(pdf_file) May not work crossplatform
